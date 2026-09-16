@@ -8,7 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ruta de prueba (ANTES del 404)
 app.get('/test-db', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT 1');
@@ -19,7 +18,9 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
-// Middleware para rutas no encontradas (404) — SIEMPRE AL FINAL
+const userRoutes = require('./routes/user.routes');
+app.use('/api/users', userRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
