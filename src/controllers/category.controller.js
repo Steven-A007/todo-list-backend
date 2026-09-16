@@ -2,10 +2,11 @@ const pool = require('../db/connection');
 const { decorateCategory, decorateCategoryList } = require('../decorators/category.decorator');
 
 async function createCategory(req, res) {
-  const { name, user_id } = req.body;
+  const { name } = req.body;
+  const user_id = req.user.id;
 
-  if (!name || !user_id) {
-    return res.status(400).json({ error: 'name y user_id son obligatorios' });
+  if (!name) {
+    return res.status(400).json({ error: 'name es obligatorio' });
   }
 
   try {
@@ -30,11 +31,7 @@ async function createCategory(req, res) {
 }
 
 async function listCategories(req, res) {
-  const { user_id } = req.query;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -50,7 +47,7 @@ async function listCategories(req, res) {
 
 async function getCategory(req, res) {
   const { id } = req.params;
-  const { user_id } = req.query;
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -71,10 +68,11 @@ async function getCategory(req, res) {
 
 async function updateCategory(req, res) {
   const { id } = req.params;
-  const { name, user_id } = req.body;
+  const { name } = req.body;
+  const user_id = req.user.id;
 
-  if (!name || !user_id) {
-    return res.status(400).json({ error: 'name y user_id son obligatorios' });
+  if (!name) {
+    return res.status(400).json({ error: 'name es obligatorio' });
   }
 
   try {
@@ -100,11 +98,7 @@ async function updateCategory(req, res) {
 
 async function deleteCategory(req, res) {
   const { id } = req.params;
-  const { user_id } = req.body;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [result] = await pool.query(

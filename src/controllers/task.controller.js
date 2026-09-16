@@ -10,10 +10,11 @@ const TASK_SELECT_WITH_TAGS = `
 `;
 
 async function createTask(req, res) {
-  const { title, description, category_id, status, tag_ids, user_id } = req.body;
+  const { title, description, category_id, status, tag_ids } = req.body;
+  const user_id = req.user.id;
 
-  if (!title || !category_id || !user_id) {
-    return res.status(400).json({ error: 'title, category_id y user_id son obligatorios' });
+  if (!title || !category_id) {
+    return res.status(400).json({ error: 'title y category_id son obligatorios' });
   }
 
   const conn = await pool.getConnection();
@@ -44,7 +45,7 @@ async function createTask(req, res) {
     await conn.rollback();
     console.error(error);
     if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-      return res.status(400).json({ error: 'category_id, user_id o tag_ids inválidos' });
+      return res.status(400).json({ error: 'category_id o tag_ids inválidos' });
     }
     res.status(500).json({ error: 'Error al crear la tarea' });
   } finally {
@@ -53,11 +54,7 @@ async function createTask(req, res) {
 }
 
 async function listTasks(req, res) {
-  const { user_id } = req.query;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -73,7 +70,7 @@ async function listTasks(req, res) {
 
 async function getTask(req, res) {
   const { id } = req.params;
-  const { user_id } = req.query;
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -94,10 +91,11 @@ async function getTask(req, res) {
 
 async function updateTask(req, res) {
   const { id } = req.params;
-  const { title, description, category_id, status, tag_ids, user_id } = req.body;
+  const { title, description, category_id, status, tag_ids } = req.body;
+  const user_id = req.user.id;
 
-  if (!title || !category_id || !user_id) {
-    return res.status(400).json({ error: 'title, category_id y user_id son obligatorios' });
+  if (!title || !category_id) {
+    return res.status(400).json({ error: 'title y category_id son obligatorios' });
   }
 
   const conn = await pool.getConnection();
@@ -141,11 +139,7 @@ async function updateTask(req, res) {
 
 async function deleteTask(req, res) {
   const { id } = req.params;
-  const { user_id } = req.body;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [result] = await pool.query('DELETE FROM tasks WHERE id = ? AND user_id = ?', [id, user_id]);
