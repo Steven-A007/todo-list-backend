@@ -2,10 +2,11 @@ const pool = require('../db/connection');
 const { decorateTag, decorateTagList } = require('../decorators/tag.decorator');
 
 async function createTag(req, res) {
-  const { name, user_id } = req.body;
+  const { name } = req.body;
+  const user_id = req.user.id;
 
-  if (!name || !user_id) {
-    return res.status(400).json({ error: 'name y user_id son obligatorios' });
+  if (!name) {
+    return res.status(400).json({ error: 'name es obligatorio' });
   }
 
   try {
@@ -25,19 +26,12 @@ async function createTag(req, res) {
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: 'Ya existe una etiqueta con ese nombre' });
     }
-    if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-      return res.status(400).json({ error: 'El user_id no existe' });
-    }
     res.status(500).json({ error: 'Error al crear la etiqueta' });
   }
 }
 
 async function listTags(req, res) {
-  const { user_id } = req.query;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -53,7 +47,7 @@ async function listTags(req, res) {
 
 async function getTag(req, res) {
   const { id } = req.params;
-  const { user_id } = req.query;
+  const user_id = req.user.id;
 
   try {
     const [rows] = await pool.query(
@@ -74,10 +68,11 @@ async function getTag(req, res) {
 
 async function updateTag(req, res) {
   const { id } = req.params;
-  const { name, user_id } = req.body;
+  const { name } = req.body;
+  const user_id = req.user.id;
 
-  if (!name || !user_id) {
-    return res.status(400).json({ error: 'name y user_id son obligatorios' });
+  if (!name) {
+    return res.status(400).json({ error: 'name es obligatorio' });
   }
 
   try {
@@ -103,11 +98,7 @@ async function updateTag(req, res) {
 
 async function deleteTag(req, res) {
   const { id } = req.params;
-  const { user_id } = req.body;
-
-  if (!user_id) {
-    return res.status(400).json({ error: 'user_id es obligatorio' });
-  }
+  const user_id = req.user.id;
 
   try {
     const [result] = await pool.query(
