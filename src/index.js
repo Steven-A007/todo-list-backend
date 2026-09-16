@@ -24,6 +24,9 @@ app.use('/api/users', userRoutes);
 const categoryRoutes = require('./routes/category.routes');
 app.use('/api/categories', categoryRoutes);
 
+const tagRoutes = require('./routes/tag.routes');
+app.use('/api/tags', tagRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
