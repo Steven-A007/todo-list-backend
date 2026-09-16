@@ -21,6 +21,9 @@ app.get('/test-db', async (req, res) => {
 const userRoutes = require('./routes/user.routes');
 app.use('/api/users', userRoutes);
 
+const categoryRoutes = require('./routes/category.routes');
+app.use('/api/categories', categoryRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
