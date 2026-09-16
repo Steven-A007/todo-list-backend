@@ -4,3 +4,6 @@ CREATE TABLE tags_task (
   PRIMARY KEY (tag_id, task_id),
   CONSTRAINT fk_tags_task_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
+
+ALTER TABLE tags_task
+  ADD CONSTRAINT fk_tags_task_task FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE;
